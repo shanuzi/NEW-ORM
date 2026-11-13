@@ -136,3 +136,14 @@ If your teacher asks why you did it this way, you can say:
 - **Casting to `(int)`** keeps `LIMIT` and `OFFSET` safe from SQL injection, since those can't be bound as normal parameters here.
 
 I can also add Prev/Next buttons or a "Page 2 of 5" label if you want.
+
+#Paginate Teachers
+
+public function index(): void
+{
+    $search   = trim((string) ($_GET['q'] ?? ''));
+    $page     = (int) ($_GET['page'] ?? 1);
+    $result   = Teacher::paginate($page, 10, $search);
+    $teachers = $result['items'];
+    $this->render('teachers/index', compact('teachers', 'search', 'result'));
+}
