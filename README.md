@@ -137,8 +137,13 @@ If your teacher asks why you did it this way, you can say:
 
 I can also add Prev/Next buttons or a "Page 2 of 5" label if you want.
 
-#Paginate Teachers
+# Paginate Teachers
 
+The `paginate()` method in `core/Model.php` is shared, so you only change two files.
+
+**1. `app/Controllers/TeacherController.php`: replace `index()`**
+
+```php
 public function index(): void
 {
     $search   = trim((string) ($_GET['q'] ?? ''));
@@ -147,3 +152,21 @@ public function index(): void
     $teachers = $result['items'];
     $this->render('teachers/index', compact('teachers', 'search', 'result'));
 }
+```
+
+**2. `views/teachers/index.php`: add this right after the closing `</table>`, before `<?php endif; ?>`**
+
+```php
+<?php if ($result['pages'] > 1): ?>
+  <p class="pagination">
+    <?php for ($i = 1; $i <= $result['pages']; $i++): ?>
+      <a class="btn <?= $i === $result['page'] ? 'primary' : '' ?>"
+         href="index.php?resource=teachers&q=<?= urlencode($search) ?>&page=<?= $i ?>"><?= $i ?></a>
+    <?php endfor; ?>
+  </p>
+<?php endif; ?>
+```
+
+The only differences from the students version are `Teacher::paginate`, the `$teachers` variable, and `resource=teachers` in the link.
+
+Search by name already works, because `paginate()` filters on the `name` column and both tables have one. If you add the Prev/Next buttons or the "Page X of Y" label for students, copy them here too.
